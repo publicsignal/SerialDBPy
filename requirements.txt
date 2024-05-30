@@ -1,0 +1,3 @@
+pyobdc
+unixodbc
+snowflake-connector-python
