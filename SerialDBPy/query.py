@@ -1,8 +1,8 @@
 from typing import Any, Optional
-
-import os
-import snowflake.connector
 from snowflake.connector import DictCursor
+
+import snowflake.connector
+import os
 
 class Connection(object):
 
