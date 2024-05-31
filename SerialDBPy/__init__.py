@@ -1,2 +1,2 @@
-from serialization import SerialDBPy
-from query import iQuery
+from SerialDBPy.serialization import SerialDBPy
+from SerialDBPy.query import iQuery
