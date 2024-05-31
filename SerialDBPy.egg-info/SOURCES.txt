@@ -2,10 +2,10 @@ LICENSE
 README.md
 setup.cfg
 setup.py
-SerialDBPy/__init__.py
-SerialDBPy/query.py
-SerialDBPy/serialization.py
 SerialDBPy.egg-info/PKG-INFO
 SerialDBPy.egg-info/SOURCES.txt
 SerialDBPy.egg-info/dependency_links.txt
 SerialDBPy.egg-info/top_level.txt
+Serialization/__init__.py
+Serialization/query.py
+Serialization/serialization.py

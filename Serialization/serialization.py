@@ -1,10 +1,10 @@
 from typing import Optional
-from query import iQuery    
+from Serialization.query import iQuery    
 
 import os
 import uuid
 
-class SerialDBPy(object):
+class Serializable(object):
 
     """
     ** TO DO: for person in [array of Person( input=query result )] Maybe we call this function load()
@@ -12,7 +12,7 @@ class SerialDBPy(object):
 
     1) This object allows any class object to become deserializable into the database, or serialized from the db
     2) How do I use this?
-        - Simply add SerialDBPy as an interited class; call [YOUR_INSTANCE].deserialize_to_db()
+        - Simply add Serializable as an interited class; call [YOUR_INSTANCE].deserialize_to_db()
     
     To-Do: Add __slots__ use; SQL Sanitizer
 
@@ -56,11 +56,11 @@ class SerialDBPy(object):
 
     def _get_vars(self):
 
-        server = getattr(self,'resource_server',SerialDBPy.default_server)
+        server = getattr(self,'resource_server',Serializable.default_server)
         db = getattr(self,'resource_db',None)
         table = getattr(self,'resource_table',None)
         map = getattr(self,'resource_map',{})
-        keys = [ key for key in map if key in SerialDBPy.key_types ]
+        keys = [ key for key in map if key in Serializable.key_types ]
 
         _mapsize = len( map.keys() )
 
@@ -75,17 +75,17 @@ class SerialDBPy(object):
             
             _keys = { key:map.get( key,None ) for key in keys }
 
-            if not SerialDBPy.IGNORE_UNDERSCORE_VARS:
+            if not Serializable.IGNORE_UNDERSCORE_VARS:
 
                 map = { key:key for key,val in self.__dict__.items() }
                 map = { **_keys,**map }
 
-            elif SerialDBPy.IGNORE_UNDERSCORE_VARS and not SerialDBPy.OVERRIDE_UNDERSCORE_WITH_PROPERTY:
+            elif Serializable.IGNORE_UNDERSCORE_VARS and not Serializable.OVERRIDE_UNDERSCORE_WITH_PROPERTY:
 
                 map = { key:key for key,val in self.__dict__.items() if key[0] != '_' }
                 map = { **_keys,**map }                
             
-            elif SerialDBPy.IGNORE_UNDERSCORE_VARS and SerialDBPy.OVERRIDE_UNDERSCORE_WITH_PROPERTY:
+            elif Serializable.IGNORE_UNDERSCORE_VARS and Serializable.OVERRIDE_UNDERSCORE_WITH_PROPERTY:
                 
                 map = { key:key for key,val in self.__dict__.items() if key[0] != '_' }
                 replaced_underscores = { key[1:]:key[1:] for key,val in self.__dict__.items() if key[0] == '_' }
@@ -160,7 +160,7 @@ class SerialDBPy(object):
 
         keys = {}
 
-        for key in SerialDBPy.key_types: # key = <pk> or <ck> or <fk> etc...
+        for key in Serializable.key_types: # key = <pk> or <ck> or <fk> etc...
 
             column_name = map.get( key,None ) # Column Name
             var_name = map.get( column_name,None ) # Python Object's Name
@@ -183,7 +183,7 @@ class SerialDBPy(object):
         server,db,table,map = self._get_vars()
 
         keys = self._keys()
-        clauses = [ f'{val} = \'{ getattr( self,map[val],None ) }\'' for key,val in keys.items() if key in SerialDBPy.key_types ]
+        clauses = [ f'{val} = \'{ getattr( self,map[val],None ) }\'' for key,val in keys.items() if key in Serializable.key_types ]
 
         return f' WHERE { " AND ".join( clauses ) }'
 
@@ -273,7 +273,7 @@ class SerialDBPy(object):
     @_valid_mapping
     def get_all_from_query( cls,query:str ):
         
-        rows = SerialDBPy.query( sql=query )
+        rows = Serializable.query( sql=query )
 
         return [ cls().get_from_json( data=row ) for row in rows ]
     
@@ -289,13 +289,13 @@ class SerialDBPy(object):
 
         server,db,table,map = self._get_vars()
 
-        n_map = [ f'{key} as {val}' for key,val in map.items() if key not in SerialDBPy.key_types ]
+        n_map = [ f'{key} as {val}' for key,val in map.items() if key not in Serializable.key_types ]
         columns = ','.join(n_map)
         instances = []
-        sql = f'select distinct {columns} from {self.resource_db}.{SerialDBPy.default_middleware}.{self.resource_table}'
+        sql = f'select distinct {columns} from {self.resource_db}.{Serializable.default_middleware}.{self.resource_table}'
 
         if len( kwargs.items() ) > 0:
-            sql += f' WHERE {SerialDBPy._generate_sql_clauses( filters=kwargs.items() )}'
+            sql += f' WHERE {Serializable._generate_sql_clauses( filters=kwargs.items() )}'
         
         resp = iQuery( ).execute(sql=sql)
 
@@ -305,7 +305,7 @@ class SerialDBPy(object):
 
             for key,val in item.items():
 
-                if SerialDBPy.OVERRIDE_UNDERSCORE_WITH_PROPERTY and hasattr( instance,f'_{key}'.lower() ):
+                if Serializable.OVERRIDE_UNDERSCORE_WITH_PROPERTY and hasattr( instance,f'_{key}'.lower() ):
                     setattr(instance, f'_{key}'.lower() ,val)
                 else:
                     setattr(instance, f'{key}'.lower() ,val)
@@ -326,11 +326,11 @@ class SerialDBPy(object):
 
         server,db,table,map = self._get_vars()
 
-        n_map = [ f'{key} as {val}' for key,val in map.items() if key not in SerialDBPy.key_types ]
+        n_map = [ f'{key} as {val}' for key,val in map.items() if key not in Serializable.key_types ]
         columns = ','.join(n_map)
         
-        sql = f'select top 1 {columns} from {db}.{SerialDBPy.default_middleware}.{table}'
-        sql += f' WHERE {SerialDBPy._generate_sql_clauses( filters=kwargs.items() )}' if len( kwargs.items() ) > 0 else self._key_clauses
+        sql = f'select top 1 {columns} from {db}.{Serializable.default_middleware}.{table}'
+        sql += f' WHERE {Serializable._generate_sql_clauses( filters=kwargs.items() )}' if len( kwargs.items() ) > 0 else self._key_clauses
 
         try:
             resp = iQuery( ).execute(sql=sql)
@@ -342,7 +342,7 @@ class SerialDBPy(object):
 
         for key,val in resp[0].items():
 
-            if SerialDBPy.OVERRIDE_UNDERSCORE_WITH_PROPERTY and hasattr( self,f'_{key}'.lower() ):
+            if Serializable.OVERRIDE_UNDERSCORE_WITH_PROPERTY and hasattr( self,f'_{key}'.lower() ):
                 setattr(self, f'_{key}'.lower() ,val)
             else:
                 setattr(self, f'{key}'.lower() ,val)
@@ -361,7 +361,7 @@ class SerialDBPy(object):
 
         server,db,table,map = self._get_vars()
         
-        vars = [ val for key,val in map.items() if key not in SerialDBPy.key_types ]
+        vars = [ val for key,val in map.items() if key not in Serializable.key_types ]
         override = lambda a : a if a not in vars else getattr( self,a,a )
         new_html = html
 
@@ -402,14 +402,14 @@ class SerialDBPy(object):
         
         if not kwargs:
 
-            sql = f'delete from {db}.{SerialDBPy.default_middleware}.{table} {self._key_clauses}'
+            sql = f'delete from {db}.{Serializable.default_middleware}.{table} {self._key_clauses}'
             iQuery().execute( sql=sql )
             return self
 
         else:
 
             clauses = [ f'{key} = {val}' for key,val in kwargs.items() ]
-            sql = f'delete from {db}.{SerialDBPy.default_middleware}.{table} where { " AND ".join( clauses ) }'
+            sql = f'delete from {db}.{Serializable.default_middleware}.{table} where { " AND ".join( clauses ) }'
             iQuery().execute( sql=sql )
 
             return self
@@ -453,14 +453,14 @@ class SerialDBPy(object):
 
         for key,val in map.items():
 
-            if key not in SerialDBPy.key_types:
+            if key not in Serializable.key_types:
 
                 _val = (f"{getattr(self,val,'')}").replace("'","\\'")
                 que.append( f'{key} = \'{_val}\'' )
 
         val_sql = ', '.join(que)
 
-        return iQuery().execute(sql=f'update {db}.{SerialDBPy.default_middleware}.{table} set {val_sql} {self._key_clauses}') 
+        return iQuery().execute(sql=f'update {db}.{Serializable.default_middleware}.{table} set {val_sql} {self._key_clauses}') 
     
     @_valid_mapping
     def serialize_to_sql(self):
@@ -479,7 +479,7 @@ class SerialDBPy(object):
 
         for key,val in map.items():
 
-            if key not in SerialDBPy.key_types:
+            if key not in Serializable.key_types:
 
                 n_val = (f"{getattr(self,val,'')}").replace("'","\\'")
                 if n_val != 'None':
@@ -491,7 +491,7 @@ class SerialDBPy(object):
         col_sql = ','.join(columns)
         val_sql = ','.join(n_map)
 
-        return f'insert into {db}.{SerialDBPy.default_middleware}.{table} ({col_sql}) values ({val_sql})'
+        return f'insert into {db}.{Serializable.default_middleware}.{table} ({col_sql}) values ({val_sql})'
         
     @_valid_mapping
     def generate_primary_key(self,length:int = 10):
@@ -510,7 +510,7 @@ class SerialDBPy(object):
             
             if key == '<pk>':
 
-                setattr(self,str(key).lower(), SerialDBPy._uuid( length=length ) )
+                setattr(self,str(key).lower(), Serializable._uuid( length=length ) )
 
         return self
     
