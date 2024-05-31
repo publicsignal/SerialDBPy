@@ -24,7 +24,7 @@ os.environ['SerialDBPy_ACCOUNT'] = 'SNOWFLAKE_ACCOUNT'
 os.environ['SerialDBPy_PSWD'] = 'SNOWFLAKE_ACCOUNT_PSWD'
 os.environ['SerialDBPy_user'] = 'SNOWFLAKE_USER'
 
-class Person( SerialDBPy ):
+class Person( Serializable ):
     
     resource_db = 'my_database' # Database where the associated table can be found
     resource_table = 'my_table' # Name of table
