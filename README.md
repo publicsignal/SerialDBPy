@@ -33,9 +33,9 @@ class Person( Serializable ):
         # pk = Primary Key; fk = Foreign Key
         # FORMAT: 'variable_name':'db_column_name'
         '<pk>':'id',
-        'id':'id',
-        'name':'name',
-        'age':'age'
+        'id':'id', # Optional when var name is the same as the associated column name
+        'name':'name', # Optional when var name is the same as the associated column name
+        'age':'age' # Optional when var name is the same as the associated column name
     }
 
     def __init__(self, name, age, height):
