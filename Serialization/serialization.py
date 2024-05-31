@@ -7,16 +7,6 @@ import uuid
 class Serializable(object):
 
     """
-    ** TO DO: for person in [array of Person( input=query result )] Maybe we call this function load()
-    ** TO DO: allow variables that shouldnt be included in the map, possibly by putting a _ in front of the name EXAMPLE: self._current = None
-
-    1) This object allows any class object to become deserializable into the database, or serialized from the db
-    2) How do I use this?
-        - Simply add Serializable as an interited class; call [YOUR_INSTANCE].deserialize_to_db()
-    
-    To-Do: Add __slots__ use; SQL Sanitizer
-
-
 
     INFORMATION:
         Table-related actions should always be @classmethods, unless functionality would be significantly hindered
