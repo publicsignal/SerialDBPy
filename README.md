@@ -16,7 +16,7 @@ To use SerialDBPy, simply inherit it in your class and call the relevant methods
 
 ```python
 import os
-from serialdbpy import SerialDBPy
+from SerialDBPy import Serializable
 
 os.environ['default_server'] = 'server_containing_databases'
 os.environ['default_middleware'] = 'default_schema' # Example: SELECT TOP 100 * FROM [db_name].[default_schema].[table];
