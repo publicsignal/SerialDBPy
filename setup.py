@@ -1,13 +1,14 @@
 from setuptools import setup, find_packages
+
 setup(
     name='SerialDBPy',
-    version='0.1.3.3',
+    version='0.1.3.6',
     author='G',
     author_email='serialdbpy@swimhdr.com',
     description='Lightweight Python ORM for basic CRUD operations.',
     license='MIT',
     url = 'https://github.com/publicsignal',
-    download_url='https://github.com/publicsignal/SerialDBPy/blob/main/dist/SerialDBPy-0.1.3.3.tar.gz',
+    download_url='https://github.com/publicsignal/SerialDBPy/tree/main/dist/SerialDBPy-0.1.3.6.tar.gz',
     packages=find_packages(),
     classifiers=[
     'Programming Language :: Python :: 3',

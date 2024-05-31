@@ -14,7 +14,7 @@ SerialDBPy is a lightweight Python ORM library meant to handle basic CRUD operat
 # Basic Usage
 To use SerialDBPy, simply inherit it in your class and call the relevant methods for serialization and deserialization.
 
-```sh
+```python
 from serialdbpy import SerialDBPy
 
 os.environ['default_server'] = 'server_containing_databases'
@@ -45,7 +45,7 @@ class Person( SerialDBPy ):
         self.height = height
 ```
 
-```sh
+```python
 # Create and insert a new person
 person = Person(name="John Doe", age=30, height=200)
 person.id = person._uuid()
@@ -60,19 +60,19 @@ person.update()
 # Converts the instance of Person into JSON format
 print( person.serialize_to_json() )
 ```
-```sh
+```python
 # Retrieve a person from the database
 # Gets John Doe from our database (I always recommend getting by the Primary Key, but either way works)
 # the kwargs on a .get() are akin to a SQL where clause
 person = Person()
 person.get(name="John Doe") 
 ```
-```sh
+```python
 # Deletes a person from the database
 person = Person().get(name="John Doe", age=30, height=200)
 person.delete()
 ```
-```sh
+```python
 # Truncates the table associated with the Person class
 Person.truncate()
 ```
