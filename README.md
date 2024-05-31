@@ -15,6 +15,7 @@ SerialDBPy is a lightweight Python ORM library meant to handle basic CRUD operat
 To use SerialDBPy, simply inherit it in your class and call the relevant methods for serialization and deserialization.
 
 ```python
+import os
 from serialdbpy import SerialDBPy
 
 os.environ['default_server'] = 'server_containing_databases'
