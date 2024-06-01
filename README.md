@@ -45,6 +45,39 @@ class Person( Serializable ):
         self.height = height
 ```
 
+Using SerialDBPy using Python Dataclasses
+```python
+from SerialDBPy import Serializable
+from typing import ClassVar
+from dataclasses import dataclass
+import os
+
+os.environ['default_server'] = 'server_containing_databases'
+os.environ['default_middleware'] = 'default_schema' # Example: SELECT TOP 100 * FROM [db_name].[default_schema].[table];
+os.environ['SerialDBPy_ACCOUNT'] = 'SNOWFLAKE_ACCOUNT'
+os.environ['SerialDBPy_PSWD'] = 'SNOWFLAKE_ACCOUNT_PSWD'
+os.environ['SerialDBPy_user'] = 'SNOWFLAKE_USER'
+
+
+@dataclass
+class Person( Serializable ):
+
+    resource_db:ClassVar[str] = 'my_database'
+    resource_table:ClassVar[str] = 'my_table'
+
+    resource_map:ClassVar[dict] = {
+        '<pk>':'id',
+        '<fk>':None
+    }
+
+    name:str
+    age:int
+    height:int
+
+person = Person( name='John Doe' )
+print( person.serialize_to_json() )
+```
+
 ```python
 # Create and insert a new person
 person = Person(name="John Doe", age=30, height=200)
