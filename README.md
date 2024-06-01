@@ -7,7 +7,6 @@ SerialDBPy is a lightweight Python ORM library meant to handle basic CRUD operat
 - Deserialize database records into class instances
 - Automatically handle primary keys with UUID generation
 - Support for custom mappings between class attributes and database columns
-- SQL injection prevention through query sanitization
 - Flexible configuration through environment variables
 
 ## Usage
@@ -82,7 +81,6 @@ Person.truncate()
 
 - IGNORE_UNDERSCORE_VARS: Ignore variables starting with an underscore (default: True)
 - OVERRIDE_UNDERSCORE_WITH_PROPERTY: Override underscore variables with properties (default: True)
-- SANITIZE_QUERIES: Sanitize all SQL queries to prevent injection attacks (default: True)
 - USE_SLOTS: Use __slots__ for memory optimization (default: True)
 - CREATE_UUID_IF_NONE: Create a UUID primary key if none is set (default: True)
 - OVERRIDE_REPR: Override the __repr__ method for string representation (default: True)
