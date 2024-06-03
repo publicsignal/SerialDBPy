@@ -40,3 +40,9 @@ class ResultSet( object ):
         # gets top [number] records from the query result set
 
         pass
+
+    def insert_into( self )
+        """
+        Inserts resultset into table 
+        """
+        pass
