@@ -108,13 +108,16 @@ person = Person().get(name="John Doe", age=30, height=200)
 person.delete()
 ```
 ```python
+""" Table-related actions """
+
 # Truncates the table associated with the Person class
 Person.truncate()
-```
 
-```python
 # Drops the table associated with the Person class
 Person.drop()
+
+# Creates a new table given the schema explicitly or implicitly defined by the resource_map
+Person.create_table()
 ```
 
 # Configuration
