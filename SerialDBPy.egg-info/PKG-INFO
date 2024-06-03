@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: SerialDBPy
+Version: 0.1.4.6
+Summary: Lightweight Python ORM for basic CRUD operations.
+Home-page: https://github.com/publicsignal
+Author: G
+Author-email: serialdbpy@swimhdr.com
+License: MIT
+Download-URL: https://github.com/publicsignal/SerialDBPy/tree/main/dist/SerialDBPy-0.1.4.6.tar.gz
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+License-File: LICENSE
+
+UNKNOWN
+

@@ -83,6 +83,48 @@ class Serializable(object):
 
         return server,db,table,map
     
+    @classmethod
+    def _get_class_vars(cls):
+
+        server = getattr(cls,'resource_server',Serializable.default_server)
+        db = getattr(cls,'resource_db',None)
+        table = getattr(cls,'resource_table',None)
+        map = getattr(cls,'resource_map',{})
+        
+        keys = [ key for key in map if key in Serializable.key_types ]
+
+        instance = cls()
+        _mapsize = len( map.keys() )
+
+        if map is None or _mapsize == 0:
+
+            # Let's do default mapping if no map is available
+            map = { key:key for key,val in instance.__dict__.items() }
+
+        elif _mapsize == len( keys ) and len( keys ) > 0:
+
+            # if map only contains valid key types
+            
+            _keys = { key:map.get( key,None ) for key in keys }
+
+            if not Serializable.IGNORE_UNDERSCORE_VARS:
+
+                map = { key:key for key,val in instance.__dict__.items() }
+                map = { **_keys,**map }
+
+            elif Serializable.IGNORE_UNDERSCORE_VARS and not Serializable.OVERRIDE_UNDERSCORE_WITH_PROPERTY:
+
+                map = { key:key for key,val in instance.__dict__.items() if key[0] != '_' }
+                map = { **_keys,**map }                
+            
+            elif Serializable.IGNORE_UNDERSCORE_VARS and Serializable.OVERRIDE_UNDERSCORE_WITH_PROPERTY:
+                
+                map = { key:key for key,val in instance.__dict__.items() if key[0] != '_' }
+                replaced_underscores = { key[1:]:key[1:] for key,val in instance.__dict__.items() if key[0] == '_' }
+                map = { **_keys,**map,**replaced_underscores }
+
+        return server,db,table,map
+    
     def _valid_mapping(func):
 
         def is_usable(self,*args, **kwargs):
@@ -100,6 +142,27 @@ class Serializable(object):
 
             except KeyError as ClassException:
                 raise KeyError(f'Unknown mapping error for instance of class type ({type(self)}):\n {ClassException}')
+        
+        return is_usable
+    
+
+    def _valid_class_mapping(func):
+
+        def is_usable(cls,*args, **kwargs):
+
+            try:
+                
+                server,db,table,map = cls._get_class_vars()
+
+                if None in [server,db,table]:
+                    raise KeyError(f'No database mapping found for class type ({(cls)})')
+                elif map is None:
+                    raise KeyError(f'No column/class mapping found for class type ({(cls)})')
+                else:
+                    return func(cls,*args, **kwargs)
+
+            except KeyError as ClassException:
+                raise KeyError(f'Unknown mapping error for instance of class type ({(cls)}):\n {ClassException}')
         
         return is_usable
         
@@ -203,28 +266,57 @@ class Serializable(object):
         return self
     
     @classmethod
+    @_valid_class_mapping
     def truncate( cls ):
         
         """
         Truncates the associated table
         """
 
-        table = getattr( cls,'resource_table',None )
-        server = getattr( cls,'resource_server',None )
+        server,db,table,map = cls._get_class_vars()
 
-        if isinstance( table, str ) and isinstance(server,str):
+        sql = f'truncate table {server}.{cls.default_middleware}.{table};'
+        iQuery().execute( sql=sql )
 
-            sql = f'truncate table {server}.{cls.default_middleware}.{table};'
-            iQuery().execute( sql=sql )
+        return cls
+    
     
     @classmethod
-    def create_or_replace( cls ):
+    @_valid_class_mapping
+    def create_table( cls ):
         
         """
         Create table if it doesnt already exist
         """
         
-        pass
+        server,db,table,map = cls._get_class_vars()
+        instance = cls()
+        
+        n_map = [ f'{key} {type(getattr( instance ))}' for key,val in map.items() if key not in Serializable.key_types ]
+        columns = ','.join(n_map)
+
+        sql = f'create table {db}.{Serializable.default_middleware}.{table} ({columns})'
+        iQuery().execute( sql=sql )
+
+        return cls
+        
+    @classmethod
+    @_valid_class_mapping
+    def drop( cls ):
+
+        """
+        Drops the table
+        """
+
+        server,db,table,map = cls._get_class_vars()
+
+        if isinstance( table, str ) and isinstance(server,str):
+
+            sql = f'drop table if exists {server}.{cls.default_middleware}.{table};'
+            iQuery().execute( sql=sql )
+        
+        return cls
+
 
     @classmethod
     @_valid_mapping
@@ -539,3 +631,7 @@ class Serializable(object):
                 clause_parts.append(f"{key} IN ({formatted_values})")
 
         return ' AND '.join(clause_parts)
+
+    def __eq__( self, other ):
+
+        return None

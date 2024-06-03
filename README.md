@@ -71,6 +71,7 @@ class Person( Serializable ):
         '<pk>':'id'
     }
 
+    id:str
     name:str
     age:int
     height:int
@@ -110,6 +111,12 @@ person.delete()
 # Truncates the table associated with the Person class
 Person.truncate()
 ```
+
+```python
+# Drops the table associated with the Person class
+Person.drop()
+```
+
 # Configuration
 ## SerialDBPy allows configuration through environment variables:
 
