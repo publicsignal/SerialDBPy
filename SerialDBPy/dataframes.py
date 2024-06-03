@@ -41,8 +41,10 @@ class ResultSet( object ):
 
         pass
 
-    def insert_into( self )
+    def insert_into( self ):
+        
         """
         Inserts resultset into table 
         """
+        
         pass

@@ -1,5 +1,5 @@
 from typing import Optional
-from Serialization.query import iQuery    
+from SerialDBPy.query import iQuery    
 
 import os
 import uuid

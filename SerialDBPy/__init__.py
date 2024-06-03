@@ -1,2 +1,2 @@
-from Serialization.serialization import Serializable
-from Serialization.query import iQuery
+from .serialization import Serializable
+from .query import iQuery
