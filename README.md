@@ -2,7 +2,7 @@
 # Overview
 SerialDBPy is a lightweight Python ORM library meant to handle basic CRUD operations between Python objects and SQL Databases.
 
-**NOTE**: Queries are not yet parameterized, and therefore cannot prevent SQL injection attacks. Fixes are being pushed shortly!
+**NOTE**: Queries are not parameterized; do not use in PROD.
 
 # Features
 - Serialize class instances to a database
